@@ -14,7 +14,6 @@ source = GtkSource.View()
 buffer = source.get_buffer()
 terminal = Vte.Terminal()
 textview = Gtk.TextView()
-textbuffer = textview.get_buffer()
 entry = Gtk.Entry()
 menu = Gtk.MenuBar()
 filemenu = Gtk.Menu()
@@ -23,7 +22,7 @@ vpaned = Gtk.VPaned()
 
 # Starting Window
 class MainWindow(Gtk.Window):
-    file_tag = 'NoFileLoaded!'
+    file_tag = ""
     # Open File function
     def open_file(menuitem, user_param):
         chooser = Gtk.FileChooserDialog(title="Open a file",action=Gtk.FileChooserAction.OPEN, buttons=(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK))
@@ -62,10 +61,6 @@ class MainWindow(Gtk.Window):
     def save_file_as(menuitem,user_param):
         chooser = Gtk.FileChooserDialog(title="Save file",action=Gtk.FileChooserAction.SAVE, buttons=(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE,Gtk.ResponseType.OK))
         chooser.set_default_response(Gtk.ResponseType.OK)
-        filter = Gtk.FileFilter()
-        filter.set_name("Text Files")
-        filter.add_mime_type("text/data")
-        chooser.add_filter(filter)
         filter2 = Gtk.FileFilter()
         filter2.set_name("All Files")
         filter2.add_pattern("*.*")
@@ -126,23 +121,10 @@ class MainWindow(Gtk.Window):
 	file.close()
 
     def	Trap1(self,widget):
-	self.box = Gtk.VBox(homogeneous=False, spacing=0)
-       	self.add(self.box)
-       	terminal.menu = Gtk.Menu()
-       	menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
-       	menu_item.connect_after("activate", lambda w: self.copy_clipboard())
-       	terminal.menu.add(menu_item)
-	scrolledwindow1.remove(source)
-	scrolledwindow1.add(textview)
-	# Vertical Pane 
-	vpaned.add1(scrolledwindow1)
-        vpaned.add2(terminal)
- 	# Pack everything in vertical box
- 	#self.box.pack_start(menu, False, False, 0)
-       	self.box.pack_start(entry, False, False, 0)
-	self.box.pack_start(vpaned, True, True, 0)
-       	self.connect("delete-event", Gtk.main_quit)
-       	self.show_all()
+	file_tag = ''
+	textbuffer = source.get_buffer()
+	textbuffer.set_text('')
+    	
 
     def	Trap2(self,widget):
 	self.box = Gtk.VBox(homogeneous=False, spacing=0)
@@ -152,7 +134,7 @@ class MainWindow(Gtk.Window):
        	menu_item.connect_after("activate", lambda w: self.copy_clipboard())
        	terminal.menu.add(menu_item)
 	scrolledwindow1.remove(source)
-	scrolledwindow1.add(source)
+	scrolledwindow1.add(textview)
 	# Vertical Pane 
 	vpaned.add1(scrolledwindow1)
         vpaned.add2(terminal)

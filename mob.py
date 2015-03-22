@@ -1,14 +1,12 @@
 # UI
 # Imort modules
-import os
-from gi.repository import Gtk, Vte,Pango, PangoCairo
+import os,sys
+from gi.repository import Gtk, Vte,Pango,PangoCairo
 from gi.repository import GLib, Gdk
 from gi.repository import GObject
 from gi.repository import GtkSource
-import numpy as np
-import sys
 # Graphical User Interface
-# Global
+# Classes - Core M.O.B Functions
 StatusBar = Gtk.Statusbar()
 source = GtkSource.View()
 buffer = source.get_buffer()
@@ -19,7 +17,7 @@ menu = Gtk.MenuBar()
 filemenu = Gtk.Menu()
 scrolledwindow1 = Gtk.ScrolledWindow()
 vpaned = Gtk.VPaned()
-
+grid = Gtk.Grid()
 # Starting Window
 class MainWindow(Gtk.Window):
     file_tag = ""
@@ -85,34 +83,49 @@ class MainWindow(Gtk.Window):
     def entry_go(self,widget):
 	input = entry.get_text()
 	print(input)
-	#Octave or Python Session Instructions
+#	#Octave or Python Session Instructions
 	octave_session = 'octave'
 	python_session = 'python'
+	command= input+"\n"
 	if input == octave_session or input == python_session:
 	  # send terminal commands
-      		command= input+"\n"
-        	length = len(command)
-        	terminal.feed_child(command, length)
+       		length = len(command)
+       		terminal.feed_child(command, length)
+		scrolledwindow1.remove(source)
 		self.box = Gtk.VBox(homogeneous=False, spacing=0)
        		self.add(self.box)
-        	terminal.menu = Gtk.Menu()
-        	menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
-        	menu_item.connect_after("activate", lambda w: self.copy_clipboard())
-        	terminal.menu.add(menu_item)
+       		terminal.menu = Gtk.Menu()
+       		menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
+       		menu_item.connect_after("activate", lambda w: self.copy_clipboard())
+       		terminal.menu.add(menu_item)
 		scrolledwindow1.remove(source)
-		scrolledwindow1.add(textview)
-		# Vertical Pane
- 		vpaned.add1(scrolledwindow1)
-        	vpaned.add2(terminal)
- 		# Pack everything in vertical box
- 		#self.box.pack_start(menu, False, False, 0)
-        	self.box.pack_start(entry, False, False, 0)
+		# Vertical Pane 
+		vpaned.add1(scrolledwindow1)
+		vpaned.add2(terminal)
+	 	# Pack everything in vertical box
+	       	self.box.pack_start(entry, False, False, 0)
 		self.box.pack_start(vpaned, True, True, 0)
-        	self.connect("delete-event", Gtk.main_quit)
-        	self.show_all()
+	       	self.connect("delete-event", Gtk.main_quit)
+	       	self.show_all()
+		
+	length = len(command)
+	#This Conditional Reads in Array Info
+	if input[length-2]==']':
+		for x in range(2,length-2):
+			if input[x]!='[': 
+				# Grid Shit
+				scrolledwindow1.remove(source)
+				scrolledwindow1.add(source)
+				file_tag = ''
+				textbuffer = source.get_buffer()
+				textbuffer.set_text(input)
 
+
+
+      	terminal.feed_child(command, length)
 	entry.set_text(' ')
-   
+
+
 
     def get_text(object, *args):  	
 	term_input = repr(terminal.get_text(lambda *a: True))  
@@ -120,13 +133,16 @@ class MainWindow(Gtk.Window):
 	file.write(term_input)
 	file.close()
 
-    def	Trap1(self,widget):
+    def Trap1(self,widget):
+	scrolledwindow1.remove(source)
+	scrolledwindow1.add(source)
 	file_tag = ''
 	textbuffer = source.get_buffer()
 	textbuffer.set_text('')
+	
     	
 
-    def	Trap2(self,widget):
+    def Trap2(self,widget):
 	self.box = Gtk.VBox(homogeneous=False, spacing=0)
        	self.add(self.box)
        	terminal.menu = Gtk.Menu()
@@ -134,7 +150,13 @@ class MainWindow(Gtk.Window):
        	menu_item.connect_after("activate", lambda w: self.copy_clipboard())
        	terminal.menu.add(menu_item)
 	scrolledwindow1.remove(source)
-	scrolledwindow1.add(textview)
+	# Grid Shit
+	table_entry1 = Gtk.Entry()
+	table_entry2 = Gtk.Entry()
+	self.add(grid)
+	grid.add(table_entry1)
+	grid.add(table_entry2)
+	scrolledwindow1.add(grid)
 	# Vertical Pane 
 	vpaned.add1(scrolledwindow1)
         vpaned.add2(terminal)
@@ -148,7 +170,7 @@ class MainWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         # Window title and Icon
-        self.set_title("MaeTrics")
+        self.set_title("M.O.B")
         # Vertical Box
         self.box = Gtk.VBox(homogeneous=False, spacing=0)
         self.add(self.box)
@@ -161,10 +183,10 @@ class MainWindow(Gtk.Window):
         terminal.menu.add(menu_item)
         # Import
         imenu = Gtk.Menu()
-        importm = Gtk.MenuItem("T.R.A.P")
+        importm = Gtk.MenuItem("Options and Modes")
         importm.set_submenu(imenu)
         itrap1 = Gtk.MenuItem("New Source")
-        itrap2 = Gtk.MenuItem("TextEditor")
+        itrap2 = Gtk.MenuItem("Table Mode")
         imenu.append(itrap1)
         imenu.append(itrap2)
 	#TRAP Signals
@@ -192,7 +214,10 @@ class MainWindow(Gtk.Window):
         source.set_highlight_current_line(True)
         source.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("silver"))
         source.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("black"))
-	source.modify_font(Pango.FontDescription('monospace 10'))
+	# textbuffer = source.get_buffer()
+	# textbuffer.set_text(input)
+	# Highlighting Functionality
+	# textbuffer = source.get_buffer()
         # Terminal settings
         terminal.set_scroll_on_output(True)
         terminal.set_scroll_on_keystroke(True)
@@ -206,16 +231,10 @@ class MainWindow(Gtk.Window):
 	terminal.set_encoding("UTF-8")
         terminal.fork_command_full(Vte.PtyFlags.DEFAULT,os.environ['HOME'],["/bin/sh"],[],GLib.SpawnFlags.DO_NOT_REAP_CHILD,None,None,)
         # send terminal commands
-        #command= "ls\n"
-        #length = len(command)
-        #terminal.feed_child(command, length)
-	terminal.connect("commit", self.get_text)
-        #Text entry
+  	# Through Text Entry Box
 	entry.connect("activate",self.entry_go)
 	input = entry.get_text()
-	#Octave or Python Session Instructions
-	octave_session = 'octave'
-	python_session = 'python'
+	print(input)	
         # Scrolled Text Window
         scrolledwindow1.set_hexpand(True)
         scrolledwindow1.set_vexpand(True)
@@ -232,6 +251,7 @@ class MainWindow(Gtk.Window):
         self.show_all()
 
 
+
+#Starting Window
 window = MainWindow()
 Gtk.main()
-

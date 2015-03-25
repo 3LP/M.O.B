@@ -79,50 +79,32 @@ class MainWindow(Gtk.Window):
             chooser.destroy()
             chooser.destroy()
 
-
+	# "Automatic" code generation
+	# LaTeX sum-to-for loop converter
     def entry_go(self,widget):
 	input = entry.get_text()
-	print(input)
-#	#Octave or Python Session Instructions
-	octave_session = 'octave'
-	python_session = 'python'
+	print(len(input))
 	command= input+"\n"
-	if input == octave_session or input == python_session:
-	  # send terminal commands
-       		length = len(command)
-       		terminal.feed_child(command, length)
-		scrolledwindow1.remove(source)
-		self.box = Gtk.VBox(homogeneous=False, spacing=0)
-       		self.add(self.box)
-       		terminal.menu = Gtk.Menu()
-       		menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
-       		menu_item.connect_after("activate", lambda w: self.copy_clipboard())
-       		terminal.menu.add(menu_item)
-		scrolledwindow1.remove(source)
-		# Vertical Pane 
-		vpaned.add1(scrolledwindow1)
-		vpaned.add2(terminal)
-	 	# Pack everything in vertical box
-	       	self.box.pack_start(entry, False, False, 0)
-		self.box.pack_start(vpaned, True, True, 0)
-	       	self.connect("delete-event", Gtk.main_quit)
-	       	self.show_all()
-		
-	length = len(command)
-	#This Conditional Reads in Array Info
-	if input[length-2]==']':
-		for x in range(2,length-2):
-			if input[x]!='[': 
-				# Grid Shit
-				scrolledwindow1.remove(source)
-				scrolledwindow1.add(source)
-				file_tag = ''
+	if input[0] == '$' and input[2]=='s' and input[3]=='u' and input[4] == 'm':
+		print('Fuck a Job and Check Im in the M.O.B with Respect')
+		index = input[14]
+		start = input[16]
+		end = input[20]
+		python_output = 'for'+' '+index+' ' +'in'+' '+'range'+'('+start+','+end+'):'
+		C_output = 'for('+index+'='+start+';'+index+'<='+end+';'+index+'++);'
+		x = 21
+		for x in range(21,len(input)):
+			#Code to Spit Out when the User is Working on a C project
+			if input[x]=='$' and input[x+1]=='C':
 				textbuffer = source.get_buffer()
-				textbuffer.set_text(input)
-
-
-
-      	terminal.feed_child(command, length)
+				textbuffer.insert_at_cursor(C_output)
+				# Add brackets for C code
+				textbuffer.insert_at_cursor('{ }')
+			#Code to Spit Out when the user is working on a Python project 
+			if input[x]=='$' and input[x+1]=='P' or input[x+1]=='p':
+				textbuffer = source.get_buffer()
+				textbuffer.insert_at_cursor(python_output)
+			
 	entry.set_text(' ')
 
 
@@ -229,12 +211,19 @@ class MainWindow(Gtk.Window):
         terminal.set_cursor_blink_mode(True)
 	terminal.connect("child-exited", lambda w: gtk.main_quit())
 	terminal.set_encoding("UTF-8")
-        terminal.fork_command_full(Vte.PtyFlags.DEFAULT,os.environ['HOME'],["/bin/sh"],[],GLib.SpawnFlags.DO_NOT_REAP_CHILD,None,None,)
-        # send terminal commands
-  	# Through Text Entry Box
+        terminal.fork_command_full(Vte.PtyFlags.DEFAULT,os.environ['HOME'],["/bin/bash"],[],GLib.SpawnFlags.DO_NOT_REAP_CHILD,None,None,)
+        # set Terminal PATH
+	command= "PATH=/usr/local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin"+'\n'
+	length = len(command)
+        terminal.feed_child(command, length)  	
+	command = 'PYTHONPATH='+'\n'
+	length = len(command)
+	terminal.feed_child(command,length)	
+	command = 'reset'+'\n'
+	length = len(command)
+	terminal.feed_child(command,length)
+	# Connect Gtk.Entry with Text Entry Box Function entry_go()
 	entry.connect("activate",self.entry_go)
-	input = entry.get_text()
-	print(input)	
         # Scrolled Text Window
         scrolledwindow1.set_hexpand(True)
         scrolledwindow1.set_vexpand(True)
@@ -255,3 +244,4 @@ class MainWindow(Gtk.Window):
 #Starting Window
 window = MainWindow()
 Gtk.main()
+

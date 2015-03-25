@@ -115,7 +115,7 @@ class MainWindow(Gtk.Window):
 	file.write(term_input)
 	file.close()
 
-    def Trap1(self,widget):
+    def function1(self,widget):
 	scrolledwindow1.remove(source)
 	scrolledwindow1.add(source)
 	file_tag = ''
@@ -124,7 +124,7 @@ class MainWindow(Gtk.Window):
 	
     	
 
-    def Trap2(self,widget):
+    def function2(self,widget):
 	self.box = Gtk.VBox(homogeneous=False, spacing=0)
        	self.add(self.box)
        	terminal.menu = Gtk.Menu()
@@ -165,15 +165,12 @@ class MainWindow(Gtk.Window):
         terminal.menu.add(menu_item)
         # Import
         imenu = Gtk.Menu()
-        importm = Gtk.MenuItem("Options and Modes")
+        importm = Gtk.MenuItem("Functions")
         importm.set_submenu(imenu)
-        itrap1 = Gtk.MenuItem("New Source")
-        itrap2 = Gtk.MenuItem("Table Mode")
-        imenu.append(itrap1)
-        imenu.append(itrap2)
-	#TRAP Signals
-	itrap1.connect("activate",self.Trap1)
-	itrap2.connect("activate",self.Trap2)
+        ifunction1 = Gtk.MenuItem("New Source")
+        imenu.append(ifunction1)
+	# function Signals
+	ifunction1.connect("activate",self.function1)
 	#Signals for other menu items
         openm = Gtk.MenuItem("Open")
         savem = Gtk.MenuItem("Save")

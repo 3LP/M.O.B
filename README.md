@@ -1,3 +1,12 @@
 # M.O.B
 
-Version 1.0.  Use shell script install.sh to create executable icon for M.O.B.  DEPENDENCIES:Vte,Gtk3,GLib,Gdk,GObject,Pango,PangoCairo,numpy,GtkSource,GnomeCommon,Gnome-doc-util,GnomeIconTheme, py2app.
+Version 0.5.  Use shell script install.sh to create executable icon for M.O.B.
+
+DEPENDENCIES:  Python 2.7, Gtk3, GtkSource, Vte, GLib, Gdk, GObject, Pango, PangoCairo, GnomeCommon, Gnome-doc-util, GnomeIconTheme.
+
+
+Mac OSX Yosemite Dependency: py2app
+Linux Dependency: /*************#######UNDER CONSTRUCTION#####3*******/
+
+
+!!!!!!!!!!!!!!!!!!INSTALLATION PROCEDURE NEEDS TESTING!!!!!!!!!!!!!!!!!!!!!!!!

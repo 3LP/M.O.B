@@ -18,6 +18,14 @@ filemenu = Gtk.Menu()
 scrolledwindow1 = Gtk.ScrolledWindow()
 vpaned = Gtk.VPaned()
 grid = Gtk.Grid()
+#Syntax Highlighting
+buffersource = GtkSource.Buffer()
+language = GtkSource.Language()
+# buffersource.set_language(language)
+buffersource.set_highlight_syntax(True)
+# style = GtkSource.StyleScheme()
+# style.get_style(classic)
+# buffersource.set_style_scheme(style)
 # Starting Window
 class MainWindow(Gtk.Window):
     file_tag = ""
@@ -83,37 +91,59 @@ class MainWindow(Gtk.Window):
 	# LaTeX sum-to-for loop converter
     def entry_go(self,widget):
 	input = entry.get_text()
-	print(len(input))
 	command= input+"\n"
-	if input[0] == '$' and input[2]=='s' and input[3]=='u' and input[4] == 'm':
+	
+	# Instructions for a C Project
+	if input[5] =="C" and input[6]=="$":
 		print('Fuck a Job and Check Im in the M.O.B with Respect')
-		index = input[14]
-		start = input[16]
-		end = input[20]
-		python_output = 'for'+' '+index+' ' +'in'+' '+'range'+'('+start+','+end+'):'
-		C_output = 'for('+index+'='+start+';'+index+'<='+end+';'+index+'++);'
-		x = 21
-		for x in range(21,len(input)):
-			#Code to Spit Out when the User is Working on a C project
-			if input[x]=='$' and input[x+1]=='C':
-				textbuffer = source.get_buffer()
-				textbuffer.insert_at_cursor(C_output)
-				# Add brackets for C code
-				textbuffer.insert_at_cursor('{ }')
-			#Code to Spit Out when the user is working on a Python project 
-			if input[x]=='$' and input[x+1]=='P' or input[x+1]=='p':
-				textbuffer = source.get_buffer()
-				textbuffer.insert_at_cursor(python_output)
+		index = input[20]
+		start = input[22]
+		end = input[26]
+		# Declare loop variable
+		var = 'int'+' '+index+';'+'\n'
+		# loop indice
+		textbuffer = source.get_buffer()
+		textbuffer.insert_at_cursor(var)
+		C_output = 'for('+index+'='+start+';'+index+'<='+end+';'+index+'++)'
+		textbuffer.insert_at_cursor(C_output)
+		# Add brackets for C code
+		textbuffer.insert_at_cursor('{')
+		# Add newline when encounter whitespace
+		#Loop Contents
+		loop_list=input[28:len(input)]
+		func_start = 0
+		func_end = 0
+		start = [ ] 
+		end = [ ]
+		for x in range(0,len(input)-28):
+			if loop_list[x]== ' ' and loop_list[x+1] !=' ':
+				func_start = x+1
+				start.append(func_start)
+			if loop_list[x]!= ' ' and (x+1)==len(loop_list) or loop_list[x+1] ==' ':
+				func_end = x+1
+				end.append(func_end)
+				
+		x = 0
+		for x in range(0,len(start)): 
+			textbuffer.insert_at_cursor('\n')
+			loop_contents = str(loop_list[start[x]:end[x]])+';'
+			textbuffer.insert_at_cursor(loop_contents)
 			
-	entry.set_text(' ')
+		textbuffer.insert_at_cursor('\n')
+		textbuffer.insert_at_cursor('}')
+		entry.set_text(' ')
+		entry.set_text('FIGA:')
 
-
-
-    def get_text(object, *args):  	
-	term_input = repr(terminal.get_text(lambda *a: True))  
-	file = open('term_input.txt','w+')
-	file.write(term_input)
-	file.close()
+	if input[5] == 'p' or input[5] == 'P' and input[6]=='y' and input[7]=='t' and input[11]=='$':	
+		index = input[25]
+		start = input[27]
+		end = input[31]
+		python_output = 'for'+' '+index+' ' +'in'+' '+'range'+'('+start+','+end+'):'
+		textbuffer = source.get_buffer()
+		textbuffer.insert_at_cursor(python_output)
+		
+	
+	
 
     def function1(self,widget):
 	scrolledwindow1.remove(source)
@@ -122,33 +152,7 @@ class MainWindow(Gtk.Window):
 	textbuffer = source.get_buffer()
 	textbuffer.set_text('')
 	
-    	
-
-    def function2(self,widget):
-	self.box = Gtk.VBox(homogeneous=False, spacing=0)
-       	self.add(self.box)
-       	terminal.menu = Gtk.Menu()
-       	menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
-       	menu_item.connect_after("activate", lambda w: self.copy_clipboard())
-       	terminal.menu.add(menu_item)
-	scrolledwindow1.remove(source)
-	# Grid Shit
-	table_entry1 = Gtk.Entry()
-	table_entry2 = Gtk.Entry()
-	self.add(grid)
-	grid.add(table_entry1)
-	grid.add(table_entry2)
-	scrolledwindow1.add(grid)
-	# Vertical Pane 
-	vpaned.add1(scrolledwindow1)
-        vpaned.add2(terminal)
- 	# Pack everything in vertical box
- 	#self.box.pack_start(menu, False, False, 0)
-       	self.box.pack_start(entry, False, False, 0)
-	self.box.pack_start(vpaned, True, True, 0)
-       	self.connect("delete-event", Gtk.main_quit)
-       	self.show_all()
-
+    
     def __init__(self):
         Gtk.Window.__init__(self)
         # Window title and Icon
@@ -188,21 +192,19 @@ class MainWindow(Gtk.Window):
         filem.set_submenu(filemenu)
         menu.append(filem)
         # Source View
+	source.new_with_buffer(buffersource)
         source.set_show_line_numbers(True)
         source.set_show_line_marks(True)
         source.set_highlight_current_line(True)
-        source.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("silver"))
-        source.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("black"))
-	# textbuffer = source.get_buffer()
-	# textbuffer.set_text(input)
-	# Highlighting Functionality
-	# textbuffer = source.get_buffer()
+        # source.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("silver"))
+        # source.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("black"))
+	source.modify_font(Pango.FontDescription('monospace 12'))
         # Terminal settings
         terminal.set_scroll_on_output(True)
         terminal.set_scroll_on_keystroke(True)
         #terminal.set_visible(True)
         terminal.set_scrollback_lines(-1)
-        terminal.set_font_from_string("monospace 10")
+        terminal.set_font_from_string("monospace 12")
         terminal.set_color_background(Gdk.color_parse("black"))
         terminal.set_color_foreground(Gdk.color_parse("silver"))
         terminal.set_cursor_blink_mode(True)
@@ -219,7 +221,8 @@ class MainWindow(Gtk.Window):
 	command = 'reset'+'\n'
 	length = len(command)
 	terminal.feed_child(command,length)
-	# Connect Gtk.Entry with Text Entry Box Function entry_go()
+	# Text Entry Boxt
+	entry.set_text('FIGA:')
 	entry.connect("activate",self.entry_go)
         # Scrolled Text Window
         scrolledwindow1.set_hexpand(True)

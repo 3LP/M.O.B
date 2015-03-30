@@ -6,7 +6,8 @@ DEPENDENCIES:  Python 2.7, Gtk3, GtkSource, Vte, GLib, Gdk, GObject, Pango, Pang
 
 
 Mac OSX Yosemite Dependency: py2app
-Linux Dependency: /*************#######UNDER CONSTRUCTION#####3*******/
+
+Linux Dependency: /*************#######UNDER CONSTRUCTION#####*******/
 
 
 !!!!!!!!!!!!!!!!!!INSTALLATION PROCEDURE NEEDS TESTING!!!!!!!!!!!!!!!!!!!!!!!!
